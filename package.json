@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/kent250/my-web-app/issues"
   },
-  "homepage": "https://github.com/kent250/my-web-app#readme"
+  "homepage": "https://github.com/kent250/my-web-app#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
 }

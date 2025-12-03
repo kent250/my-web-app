@@ -1,10 +1,21 @@
-const http = require("http");
+const express = require('express');
+const app = express();
+const port = 3000;
 
-const server = http.createServer((req, res) => {
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("Hello World");
+app.get('/', (req, res) => {
+    res.json({
+        message: 'Hello, World!',
+        status: 'success',
+    });
 });
 
-server.listen(3000, () => {
-    console.log("Server running on http://localhost:3000");
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'UP',
+        timestamp: new Date().toISOString()
+    });
+});
+
+app.listen(port, () => {
+    console.log(`App listening at http://localhost:${port}`);
 });
