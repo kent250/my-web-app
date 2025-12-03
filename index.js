@@ -9,6 +9,12 @@ app.get('/', (req, res) => {
     });
 });
 
+app.get('/about', (req, res) => {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    res.end('About Page\n');
+});
+
 app.get('/health', (req, res) => {
     res.status(200).json({
         status: 'UP',
