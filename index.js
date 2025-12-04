@@ -11,6 +11,7 @@ app.get("/", (req, res) => {
 
 app.get("/about", (req, res) => {
   res.statusCode = 200;
+
   res.setHeader("Content-Type", "text/plain");
   res.end("About Page\nMy name is Shumbusho Irumva\n");
 });
