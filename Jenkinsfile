@@ -16,10 +16,13 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                // Use WSL to run Unix-style commands
-                bat '''
-                  wsl docker build -t ${DOCKER_IMAGE}:latest .
-                '''
+                script {
+                    if (isUnix()) {
+                        sh "docker build -t ${DOCKER_IMAGE}:latest ."
+                    } else {
+                        bat "docker build -t %DOCKER_IMAGE% ."
+                    }
+                }
             }
         }
 
@@ -30,20 +33,38 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    bat '''
-                      wsl sh -c "echo \\\"$DOCKER_PASS\\\" | docker login -u \\\"$DOCKER_USER\\\" --password-stdin"
-                      wsl docker push ${DOCKER_IMAGE}:latest
-                    '''
+                    script {
+                        if (isUnix()) {
+                            sh """
+                                echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                                docker push ${DOCKER_IMAGE}:latest
+                            """
+                        } else {
+                            bat """
+                                echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                                docker push %DOCKER_IMAGE%
+                            """
+                        }
+                    }
                 }
             }
         }
 
         stage('Deploy (Local Host)') {
             steps {
-                bat '''
-                  wsl docker rm -f ${CONTAINER_NAME} || true
-                  wsl docker run -d --name ${CONTAINER_NAME} -p 3000:3000 ${DOCKER_IMAGE}:latest
-                '''
+                script {
+                    if (isUnix()) {
+                        sh """
+                            docker rm -f ${CONTAINER_NAME} || true
+                            docker run -d --name ${CONTAINER_NAME} -p 3000:3000 ${DOCKER_IMAGE}:latest
+                        """
+                    } else {
+                        bat """
+                            docker rm -f %CONTAINER_NAME% || exit 0
+                            docker run -d --name %CONTAINER_NAME% -p 3000:3000 %DOCKER_IMAGE%
+                        """
+                    }
+                }
             }
         }
     }
